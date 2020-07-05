@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A7295ACE-73F3-4C11-A4D9-75BB4426FAA7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.SqlServer.Management.UI.Grid</RootNamespace>
+    <AssemblyName>Microsoft.VisualStudio.vspGridControl</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Accessibility">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BlockOfCells.cs" />
+    <Compile Include="Enum.cs" />
+    <Compile Include="CaptureTracker.cs" />
+    <Compile Include="events\ColumnReorderRequestedEventArgs.cs" />
+    <Compile Include="events\ColumnsReorderedEventArgs.cs" />
+    <Compile Include="events\ColumnWidthChangedEventArgs.cs" />
+    <Compile Include="events\ContentsChangedEventHandler.cs" />
+    <Compile Include="events\CustomizeCellGDIObjectsEventArgs.cs" />
+    <Compile Include="manager\DrawManager.cs" />
+    <Compile Include="EmbeddedComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="events\EmbeddedControlContentsChangedEventArgs.cs" />
+    <Compile Include="EmbeddedSpinBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="EmbeddedTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="column\GridBitmapColumn.cs" />
+    <Compile Include="GridButton.cs" />
+    <Compile Include="column\GridButtonColumn.cs" />
+    <Compile Include="column\GridCheckBoxColumn.cs" />
+    <Compile Include="column\GridColumn.cs" />
+    <Compile Include="column\GridColumnInfo.cs" />
+    <Compile Include="GridConstants.cs" />
+    <Compile Include="GridControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GridDragImageList.cs" />
+    <Compile Include="GridHeader.cs" />
+    <Compile Include="column\GridHyperlinkColumn.cs" />
+    <Compile Include="GridPrintDocument.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="events\GridSpecialEventArgs.cs" />
+    <Compile Include="column\GridTextColumn.cs" />
+    <Compile Include="events\HeaderButtonClickedEventArgs.cs" />
+    <Compile Include="HitTestInfo.cs" />
+    <Compile Include="Interface.cs" />
+    <Compile Include="events\KeyPressedOnCellEventArgs.cs" />
+    <Compile Include="events\MouseButtonClickedEventArgs.cs" />
+    <Compile Include="events\MouseButtonClickingEventArgs.cs" />
+    <Compile Include="events\MouseButtonDoubleClickedEventArgs.cs" />
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="manager\ScrollManager.cs" />
+    <Compile Include="events\SelectionChangedEventArgs.cs" />
+    <Compile Include="manager\SelectionManager.cs" />
+    <Compile Include="SR.cs" />
+    <Compile Include="SRError.cs" />
+    <Compile Include="events\StandardKeyProcessingEventArgs.cs" />
+    <Compile Include="events\TooltipDataNeededEventArgs.cs" />
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SR.resx">
+      <DependentUpon>SR.cs</DependentUpon>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SR.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SRError.resx">
+      <DependentUpon>SRError.cs</DependentUpon>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SRError.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -32,10 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.vspGridControl, Version=9.0.242.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\References\Microsoft.VisualStudio.vspGridControl.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -79,6 +75,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\vspGridControl\vspGridControl.csproj">
+      <Project>{a7295ace-73f3-4c11-a4d9-75bb4426faa7}</Project>
+      <Name>vspGridControl</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\favicon-180x180.png" />
