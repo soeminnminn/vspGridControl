@@ -12,8 +12,14 @@ namespace Microsoft.SqlServer.Management.UI.Grid
         private static Bitmap s_DisabledBitmap;
         private static Bitmap s_IntermidiateBitmap;
         private static Bitmap s_UncheckedBitmap;
+        private static Bitmap s_TreePlusBitmap;
+        private static Bitmap s_TreeMinusBitmap;
 
         public const int StandardCheckBoxSize = 13;
+        public const int StandardTreeGlyphSize = 16;
+
+        public static ushort[] treePlusBoxBmp = { 0xffff, 0xffff, 0xffff, 0x0fe0, 0xefef, 0xefee, 0xefee, 0x2fe8, 0xefee, 0xefee, 0xefef, 0x0fe0, 0xffff, 0xffff, 0xffff, 0xffff };
+        public static ushort[] treeMinusBoxBmp = { 0xffff, 0xffff, 0xffff, 0x0fe0, 0xefef, 0xefef, 0xefef, 0x2fe8, 0xefef, 0xefef, 0xefef, 0x0fe0, 0xffff, 0xffff, 0xffff, 0xffff };
 
         public const string TName = "GridControl";
 
@@ -100,6 +106,48 @@ namespace Microsoft.SqlServer.Management.UI.Grid
             Bitmap disabledCheckBoxBitmap = DisabledCheckBoxBitmap;
         }
 
+        private static void GetStdTreeBitmap(Bitmap bmp, ButtonState state)
+        {
+            Rectangle bounds = new Rectangle(0, 0, StandardTreeGlyphSize, StandardTreeGlyphSize);
+            using (Graphics graphics = Graphics.FromImage(bmp))
+            {
+                graphics.Clear(Color.Transparent);
+                if (Application.RenderWithVisualStyles)
+                {
+                    VisualStyleElement element = DrawManager.GetTreePlusMinus(state);
+                    if ((element != null) && VisualStyleRenderer.IsElementDefined(element))
+                    {
+                        new VisualStyleRenderer(element).DrawBackground(graphics, bounds);
+                        return;
+                    }
+                }
+
+                CheckState checkState = ((state & ButtonState.Checked) == ButtonState.Checked) ? CheckState.Checked : CheckState.Unchecked;
+                ushort[] boxBmp = treePlusBoxBmp;
+                if (checkState == CheckState.Checked)
+                {
+                    boxBmp = treeMinusBoxBmp;
+                }
+                IntPtr bmpPtr = NativeMethods.CreateBitmap(16, 16, 1, 1, boxBmp);
+                using (Bitmap bmpGlyph = new Bitmap(16, 16))
+                {
+                    Graphics gBmp = Graphics.FromImage(bmpGlyph);
+                    gBmp.FillRectangle(new SolidBrush(Color.Purple), new Rectangle(0, 0, 16, 16));
+                    gBmp.FillRectangle(SystemBrushes.Window, new Rectangle(3, 3, 8, 8));
+
+                    using (Bitmap bmpMark = Bitmap.FromHbitmap(bmpPtr))
+                    {
+                        bmpMark.MakeTransparent(Color.White);
+                        gBmp.DrawImage(bmpMark, Point.Empty);
+                    }
+                    gBmp.DrawRectangle(new Pen(Color.Gray), new Rectangle(3, 3, 8, 8));
+                    bmpGlyph.MakeTransparent(Color.Purple);
+                    graphics.DrawImage(bmpGlyph, new Point(bounds.Left + ((bounds.Width - 16) / 2), bounds.Top + ((bounds.Height - 16) / 2)));
+                }
+                bmpPtr = IntPtr.Zero;
+            }
+        }
+
         // Properties
         public static TextFormatFlags DefaultTextFormatFlags
         {
@@ -160,6 +208,32 @@ namespace Microsoft.SqlServer.Management.UI.Grid
                 return s_UncheckedBitmap;
             }
         }
+
+        public static Bitmap TreePlusBitmap
+        {
+            get
+            {
+                if (s_TreePlusBitmap == null)
+                {
+                    s_TreePlusBitmap = new Bitmap(StandardTreeGlyphSize, StandardTreeGlyphSize);
+                    GetStdTreeBitmap(s_TreePlusBitmap, ButtonState.Normal);
+                }
+                return s_TreePlusBitmap;
+            }
+        }
+
+        public static Bitmap TreeMinusBitmap
+        {
+            get
+            {
+                if (s_TreeMinusBitmap == null)
+                {
+                    s_TreeMinusBitmap = new Bitmap(StandardTreeGlyphSize, StandardTreeGlyphSize);
+                    GetStdTreeBitmap(s_TreeMinusBitmap, ButtonState.Checked);
+                }
+                return s_TreeMinusBitmap;
+            }
+        }
     }
 
     public class EditableCellType
@@ -180,6 +254,7 @@ namespace Microsoft.SqlServer.Management.UI.Grid
         public const int Bitmap = 3;
         public const int Checkbox = 4;
         public const int Hyperlink = 5;
+        public const int Tree = 6;
         public const int FirstCustomColumnType = 0x400;
     }
 }

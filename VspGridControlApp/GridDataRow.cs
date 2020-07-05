@@ -10,6 +10,7 @@ namespace VspGridControlApp
         {
             IsChecked = false;
             Image = null;
+            TreeText = string.Empty;
             Text = string.Empty;
             DropDownText = string.Empty;
             DropDownListText = string.Empty;
@@ -23,6 +24,8 @@ namespace VspGridControlApp
         public bool IsChecked { get; set; }
 
         public Bitmap Image { get; set; }
+
+        public string TreeText { get; set; }
 
         public string Text { get; set; }
 

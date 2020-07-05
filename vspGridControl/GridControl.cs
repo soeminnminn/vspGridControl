@@ -247,6 +247,11 @@ namespace Microsoft.SqlServer.Management.UI.Grid
             return new GridTextColumn(ci, nWidthInPixels, colIndex);
         }
 
+        protected virtual GridColumn AllocateTreeColumn(GridColumnInfo ci, int nWidthInPixels, int colIndex)
+        {
+            return new GridTreeColumn(ci, nWidthInPixels, colIndex);
+        }
+
         protected virtual GridColumn AllocateCustomColumn(GridColumnInfo ci, int nWidthInPixels, int colIndex)
         {
             throw new NotImplementedException(SRError.DeriveToImplementCustomColumn);
@@ -270,6 +275,9 @@ namespace Microsoft.SqlServer.Management.UI.Grid
 
                 case GridColumnType.Hyperlink:
                     return this.AllocateHyperlinkColumn(ci, nWidthInPixels, colIndex);
+
+                case GridColumnType.Tree:
+                    return this.AllocateTreeColumn(ci, nWidthInPixels, colIndex);
             }
             return this.AllocateCustomColumn(ci, nWidthInPixels, colIndex);
         }
@@ -384,9 +392,9 @@ namespace Microsoft.SqlServer.Management.UI.Grid
             {
                 minWidthDuringColResize = this.m_captureTracker.MinWidthDuringColResize;
             }
-            if (minWidthDuringColResize > maximumColumnWidth)
+            if (minWidthDuringColResize > 0x4e20)
             {
-                minWidthDuringColResize = maximumColumnWidth;
+                minWidthDuringColResize = 0x4e20;
             }
             return minWidthDuringColResize;
         }
@@ -1500,7 +1508,7 @@ namespace Microsoft.SqlServer.Management.UI.Grid
             if (flag)
             {
                 TimeSpan span = (TimeSpan) (now - this.m_captureTracker.Time);
-                if (span.TotalSeconds < hyperlinkSelectionDelay)
+                if (span.TotalSeconds < 0.5)
                 {
                     this.OnGridSpecialEvent(0, null, this.m_captureTracker.CaptureHitTest, this.m_captureTracker.RowIndex, this.m_captureTracker.ColumnIndex, this.m_captureTracker.CellRect, MouseButtons.None, this.m_captureTracker.ButtonArea);
                     this.m_selMgr.Clear();

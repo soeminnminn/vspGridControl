@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockOfCells.cs" />
+    <Compile Include="column\GridTreeColumn.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="CaptureTracker.cs" />
     <Compile Include="events\ColumnReorderRequestedEventArgs.cs" />

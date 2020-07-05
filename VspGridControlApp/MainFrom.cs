@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Drawing;
+using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using Microsoft.SqlServer.Management.UI.Grid;
+using S16.Utils;
 
 namespace VspGridControlApp
 {
     public partial class MainFrom : Form
     {
         #region Variables
-        private List<GridDataRow> mGridData;
+        private Node<GridDataRow> mNode;
         #endregion
 
         #region Constructor
@@ -34,27 +39,29 @@ namespace VspGridControlApp
                 IsUserResizable = false,
                 HeaderType = GridColumnHeaderType.CheckBox
             });
-            this.gridControl.AddColumn(new GridColumnInfo() { ColumnType = GridColumnType.Bitmap, ColumnWidth = 6, IsUserResizable = false });
+            this.gridControl.AddColumn(new GridColumnInfo() { ColumnType = GridColumnType.Bitmap, ColumnWidth = 5, IsUserResizable = false });
+            this.gridControl.AddColumn(new GridColumnInfo() { ColumnType = GridColumnType.Tree, ColumnWidth = 50 });
             this.gridControl.AddColumn(new GridColumnInfo());
             this.gridControl.AddColumn(new GridColumnInfo());
-            this.gridControl.AddColumn(new GridColumnInfo() { ColumnWidth = 24 });
+            this.gridControl.AddColumn(new GridColumnInfo());
             this.gridControl.AddColumn(new GridColumnInfo());
             this.gridControl.AddColumn(new GridColumnInfo() { ColumnType = GridColumnType.Hyperlink });
             this.gridControl.AddColumn(new GridColumnInfo() { ColumnType = GridColumnType.Button, ColumnAlignment = HorizontalAlignment.Center });
 
             this.gridControl.SetHeaderInfo(0, "", GridCheckBoxState.Unchecked);
             this.gridControl.SetHeaderInfo(1, "", null);
-            this.gridControl.SetHeaderInfo(2, "Text", null);
-            this.gridControl.SetHeaderInfo(3, "Dropdown", null);
-            this.gridControl.SetHeaderInfo(4, "DropdownList", null);
-            this.gridControl.SetHeaderInfo(5, "Spin", null);
-            this.gridControl.SetHeaderInfo(6, "Hyperlink", null);
-            this.gridControl.SetHeaderInfo(7, "Button", null);
+            this.gridControl.SetHeaderInfo(2, "Tree", null);
+            this.gridControl.SetHeaderInfo(3, "Text", null);
+            this.gridControl.SetHeaderInfo(4, "Dropdown", null);
+            this.gridControl.SetHeaderInfo(5, "DropdownList", null);
+            this.gridControl.SetHeaderInfo(6, "Spin", null);
+            this.gridControl.SetHeaderInfo(7, "Hyperlink", null);
+            this.gridControl.SetHeaderInfo(8, "Button", null);
 
             this.gridControl.SelectionType = GridSelectionType.SingleRow;
-            this.gridControl.FirstScrollableColumn = 2;
+            this.gridControl.FirstScrollableColumn = 3;
 
-            this.gridControl.GridStorage = new GridStorage(this.mGridData);
+            this.gridControl.GridStorage = new GridStorage(this.mNode);
 
             this.gridControl.MouseButtonClicked += GridControl_MouseButtonClicked;
             this.gridControl.SelectionChanged += GridControl_SelectionChanged;
@@ -63,19 +70,39 @@ namespace VspGridControlApp
 
         private void BuildData()
         {
-            this.mGridData = new List<GridDataRow>();
+            this.mNode = new Node<GridDataRow>(new GridDataRow());
 
-            for(int i=0; i<100; i++)
+            for(int i=0; i<10; i++)
             {
-                this.mGridData.Add(new GridDataRow() 
+                Node<GridDataRow> node = this.mNode.Nodes.Add(new GridDataRow() 
                 {
                     Image = Properties.Resources.favicon,
+                    TreeText = string.Format("Tree: {0}", i),
                     Text = string.Format("Text: {0}", i),
                     DropDownText = string.Format("DropDown: {0}", i),
                     DropDownListText = string.Format("DropDownList: {0}", i),
                     SpinValue = i,
                     HyperLinkText = string.Format("HyperLink: {0}", i),
                     ButtonText = string.Format("Button: {0}", i)
+                });
+                this.AddChildren(node);
+            }
+        }
+
+        private void AddChildren(Node<GridDataRow> pNode)
+        {
+            GridDataRow row = pNode.Value;
+            for (int i = 0; i < 5; i++)
+            {
+                Node<GridDataRow> node = pNode.Nodes.Add(new GridDataRow()
+                {
+                    TreeText = string.Format("{0}, {1}", row.TreeText, i),
+                    Text = string.Format("{0}, {1}", row.Text, i),
+                    DropDownText = string.Format("{0}, {1}", row.DropDownText, i),
+                    DropDownListText = string.Format("{0}, {1}", row.DropDownListText, i),
+                    SpinValue = i,
+                    HyperLinkText = string.Format("{0}, {1}", row.HyperLinkText, i),
+                    ButtonText = string.Format("{0}, {1}", row.ButtonText, i)
                 });
             }
         }
@@ -88,7 +115,7 @@ namespace VspGridControlApp
 
         private void GridControl_MouseButtonClicked(object sender, MouseButtonClickedEventArgs args)
         {
-            if (args.ColumnIndex == 7)
+            if (args.ColumnIndex == 8)
             {
                 MessageBox.Show("Button Clicked");
             }
@@ -96,7 +123,7 @@ namespace VspGridControlApp
 
         private void GridControl_GridSpecialEvent(object sender, GridSpecialEventArgs sea)
         {
-            if (sea.ColumnIndex == 6)
+            if (sea.ColumnIndex == 7)
             {
                 MessageBox.Show("Hyperlink Clicked");
             }
@@ -127,17 +154,16 @@ namespace VspGridControlApp
         public class GridStorage : IGridStorage
         {
             #region Variables
-            private List<GridDataRow> mData;
+            private Node<GridDataRow>[] mNodes;
             #endregion
 
             #region Constructor
-            public GridStorage(List<GridDataRow> list)
+            public GridStorage(Node<GridDataRow> node)
             {
-                this.mData = list;
+                this.mNodes = node.GetAllNodes(true);
             }
             #endregion
 
-            #region Methods
             public long EnsureRowsInBuf(long FirstRowIndex, long LastRowIndex)
             {
                 return 0L;
@@ -145,16 +171,16 @@ namespace VspGridControlApp
 
             public void FillControlWithData(long nRowIndex, int nColIndex, IGridEmbeddedControl control)
             {
-                GridDataRow row = this.mData[(int)nRowIndex];
+                GridDataRow row = this.mNodes[nRowIndex];
                 switch (nColIndex)
                 {
-                    case 2:
+                    case 3:
                         {
                             EmbeddedTextBox textBox = control as EmbeddedTextBox;
                             textBox.Text = row.Text;
                         }
                         break;
-                    case 3:
+                    case 4:
                         {
                             EmbeddedComboBox comboBox = control as EmbeddedComboBox;
                             for (int i = 0; i < (int)this.NumRows(); i++)
@@ -164,10 +190,10 @@ namespace VspGridControlApp
                             comboBox.Text = row.DropDownText;
                         }
                         break;
-                    case 4:
+                    case 5:
                         {
                             EmbeddedComboBox comboBox = control as EmbeddedComboBox;
-                            for(int i=0; i<(int)this.NumRows(); i++)
+                            for (int i = 0; i < (int)this.NumRows(); i++)
                             {
                                 comboBox.AddDataAsString(string.Format("DropDownList: {0}", i));
                             }
@@ -175,7 +201,7 @@ namespace VspGridControlApp
                             comboBox.SelectedItem = row.DropDownListText;
                         }
                         break;
-                    case 5:
+                    case 6:
                         {
                             EmbeddedSpinBox spinBox = control as EmbeddedSpinBox;
                             spinBox.Value = row.SpinValue;
@@ -188,27 +214,27 @@ namespace VspGridControlApp
 
             public Bitmap GetCellDataAsBitmap(long nRowIndex, int nColIndex)
             {
-                GridDataRow row = this.mData[(int)nRowIndex];
+                GridDataRow row = this.mNodes[nRowIndex];
                 return row.Image;
             }
 
             public string GetCellDataAsString(long nRowIndex, int nColIndex)
             {
-                GridDataRow row = this.mData[(int)nRowIndex];
+                GridDataRow row = this.mNodes[nRowIndex];
 
                 switch (nColIndex)
                 {
-                    case 2:
-                        return row.Text;
                     case 3:
-                        return row.DropDownText;
+                        return row.Text;
                     case 4:
-                        return row.DropDownListText;
+                        return row.DropDownText;
                     case 5:
-                        return string.Format("{0}", row.SpinValue);
+                        return row.DropDownListText;
                     case 6:
-                        return row.HyperLinkText;
+                        return string.Format("{0}", row.SpinValue);
                     case 7:
+                        return row.HyperLinkText;
+                    case 8:
                         return row.ButtonText;
                     default:
                         return string.Format("Col: {0}, Row: {1}", nColIndex, nRowIndex);
@@ -217,7 +243,7 @@ namespace VspGridControlApp
 
             public void GetCellDataForButton(long nRowIndex, int nColIndex, out ButtonCellState state, out Bitmap image, out string buttonLabel)
             {
-                GridDataRow row = this.mData[(int)nRowIndex];
+                GridDataRow row = this.mNodes[nRowIndex];
 
                 state = ButtonCellState.Normal;
                 image = null;
@@ -226,21 +252,31 @@ namespace VspGridControlApp
 
             public GridCheckBoxState GetCellDataForCheckBox(long nRowIndex, int nColIndex)
             {
-                GridDataRow row = this.mData[(int)nRowIndex];
+                GridDataRow row = this.mNodes[nRowIndex];
                 return row.IsChecked ? GridCheckBoxState.Checked : GridCheckBoxState.Unchecked;
+            }
+
+            public void GetCellDataForTree(long nRowIndex, int nColIndex, out int level, out bool expanded, out bool hasChildren, out string label)
+            {
+                Node<GridDataRow> row = this.mNodes[nRowIndex];
+
+                level = row.Level - 1;
+                expanded = true;
+                hasChildren = row.HasChildren;
+                label = row.Value.TreeText;
             }
 
             public int IsCellEditable(long nRowIndex, int nColIndex)
             {
                 switch(nColIndex)
                 {
-                    case 2:
-                        return 1; // Text box
                     case 3:
-                        return 2; // Dropdown
+                        return 1; // Text box
                     case 4:
-                        return 3; // Dropdown List
+                        return 2; // Dropdown
                     case 5:
+                        return 3; // Dropdown List
+                    case 6:
                         return 4; // spin
                     default:
                         return 0;
@@ -249,35 +285,35 @@ namespace VspGridControlApp
 
             public long NumRows()
             {
-                return this.mData.Count;
+                return this.mNodes.Length;
             }
 
             public bool SetCellDataFromControl(long nRowIndex, int nColIndex, IGridEmbeddedControl control)
             {
                 switch (nColIndex)
                 {
-                    case 2:
-                        {
-                            EmbeddedTextBox textBox = control as EmbeddedTextBox;
-                            this.mData[(int)nRowIndex].Text = textBox.Text;
-                        }
-                        return true;
                     case 3:
                         {
-                            EmbeddedComboBox comboBox = control as EmbeddedComboBox;
-                            this.mData[(int)nRowIndex].DropDownText = comboBox.Text;
+                            EmbeddedTextBox textBox = control as EmbeddedTextBox;
+                            this.mNodes[(int)nRowIndex].Value.Text = textBox.Text;
                         }
                         return true;
                     case 4:
                         {
                             EmbeddedComboBox comboBox = control as EmbeddedComboBox;
-                            this.mData[(int)nRowIndex].DropDownListText = comboBox.SelectedItem.ToString();
+                            this.mNodes[(int)nRowIndex].Value.DropDownText = comboBox.Text;
                         }
                         return true;
                     case 5:
                         {
+                            EmbeddedComboBox comboBox = control as EmbeddedComboBox;
+                            this.mNodes[(int)nRowIndex].Value.DropDownListText = comboBox.SelectedItem.ToString();
+                        }
+                        return true;
+                    case 6:
+                        {
                             EmbeddedSpinBox spinBox = control as EmbeddedSpinBox;
-                            this.mData[(int)nRowIndex].SpinValue = (int)spinBox.Value;
+                            this.mNodes[(int)nRowIndex].Value.SpinValue = (int)spinBox.Value;
                         }
                         return true;
                     default:
@@ -285,7 +321,6 @@ namespace VspGridControlApp
                 }
                 return false;
             }
-            #endregion
         }
         #endregion
     }

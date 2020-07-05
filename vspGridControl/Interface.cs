@@ -126,6 +126,7 @@ namespace Microsoft.SqlServer.Management.UI.Grid
         string GetCellDataAsString(long nRowIndex, int nColIndex);
         void GetCellDataForButton(long nRowIndex, int nColIndex, out ButtonCellState state, out Bitmap image, out string buttonLabel);
         GridCheckBoxState GetCellDataForCheckBox(long nRowIndex, int nColIndex);
+        void GetCellDataForTree(long nRowIndex, int nColIndex, out int level, out bool expanded, out bool hasChildren, out string label);
         int IsCellEditable(long nRowIndex, int nColIndex);
         long NumRows();
         bool SetCellDataFromControl(long nRowIndex, int nColIndex, IGridEmbeddedControl control);

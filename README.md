@@ -1,5 +1,5 @@
 # vspGridControl
-Microsoft.VisualStudio.vspGridControl non documented show case.
+Microsoft.VisualStudio.vspGridControl none documented show case.
 
 ![Screenshot][1]
 

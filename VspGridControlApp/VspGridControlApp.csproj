@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\Node.cs" />
     <Compile Include="GridDataRow.cs" />
     <Compile Include="MainFrom.cs">
       <SubType>Form</SubType>
